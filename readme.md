@@ -95,5 +95,6 @@ This is a voice search demo project built using Python and Flask. The applicatio
 
 
 #Basic Graph
-![Basic Graph]("./static/graph.png")
+![Basic Graph](static/graph.png)
+
 
