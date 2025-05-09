@@ -93,7 +93,3 @@ This is a voice search demo project built using Python and Flask. The applicatio
 - requests
 - numpy
 
-
-Adding a image to the readme file
-#Basic Graph
-![Basic Graph]("./static/graph.png")
