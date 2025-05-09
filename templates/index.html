@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoSearch | Voice Product Search</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2557a7;
+      --secondary: #f8f9fa;
+      --accent: #ff6b35;
+      --text: #2d3748;
+      --text-light: #718096;
+      --white: #ffffff;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--secondary);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      background-color: var(--white);
+      box-shadow: var(--shadow);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .logo span {
+      color: var(--accent);
+    }
+    
+    .search-container {
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .search-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+    
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    
+    #search-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    #search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 87, 167, 0.2);
+    }
+    
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+    
+    .btn-primary:hover {
+      background-color: #1a468f;
+    }
+    
+    .btn-accent {
+      background-color: var(--accent);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-accent:hover {
+      background-color: #e05a2b;
+    }
+    
+    .btn-accent.recording {
+      background-color: #d10000;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(209, 0, 0, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(209, 0, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(209, 0, 0, 0); }
+    }
+    
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      padding: 1rem;
+      color: var(--text-light);
+    }
+    
+    .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 3px solid var(--primary);
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .results-container {
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-top: 1rem;
+    }
+    
+    .results-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+    
+    .result-item {
+      border-bottom: 1px solid #eee;
+      padding: 1rem 0;
+    }
+    
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .search-term {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-badge {
+      background-color: var(--secondary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    .amazon-link {
+      display: inline-block;
+      background-color: #ff9900;
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .amazon-link:hover {
+      background-color: #e68a00;
+    }
+    
+    .error-message {
+      color: #d10000;
+      background-color: #ffebee;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .search-box {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo">Echo<span>Search</span></a>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="search-container">
+      <h1 class="search-title">Find products with your voice</h1>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Say 'bag for kid' or type your search..." />
+        <button id="search-btn" class="btn btn-primary">Search</button>
+        <button id="voice-btn" class="btn btn-accent">
+          <span>🎤</span> Voice Search
+        </button>
+      </div>
+      <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <span>Processing your request...</span>
+      </div>
+    </div>
+    
+    <div id="results" class="results-container hidden">
+      <h2 class="results-title">Search Results</h2>
+      <div id="results-content"></div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© {{ current_year }} EchoSearch. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const voiceBtn = document.getElementById('voice-btn');
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('search-input');
+    const loadingEl = document.getElementById('loading');
+    const resultsEl = document.getElementById('results');
+    const resultsContent = document.getElementById('results-content');
+
+    let recognition;
+
+    // Setup Web Speech API
+    if ('webkitSpeechRecognition' in window) {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        voiceBtn.classList.add('recording');
+        searchInput.placeholder = 'Listening... Speak now';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        searchInput.value = transcript;
+        performSearch(transcript, true);
+      };
+
+      recognition.onerror = (event) => {
+        showError("Voice recognition error: " + event.error);
+      };
+
+      recognition.onend = () => {
+        voiceBtn.classList.remove('recording');
+        searchInput.placeholder = 'Say "iPhone case under $50" or type your search...';
+      };
+
+      voiceBtn.addEventListener('click', () => {
+        if (voiceBtn.classList.contains('recording')) {
+          recognition.stop();
+        } else {
+          recognition.start();
+        }
+      });
+    } else {
+      voiceBtn.disabled = true;
+      voiceBtn.innerHTML = '<span>🎤</span> Voice Not Supported';
+    }
+
+    searchBtn.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      if (query) performSearch(query, false);
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim(); 
+        if (query) performSearch(query, false);
+      }
+    });
+
+    async function performSearch(query, isVoice = false) {
+      loadingEl.classList.remove('hidden');
+      resultsEl.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, is_voice: isVoice })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Unknown error");
+
+        const filters = data.filters || {};
+        const maxPrice = filters.price ? `&max_price=${filters.price}` : '';
+        const amazonLink = `https://www.amazon.com/s?k=${encodeURIComponent(data.search_term)}${maxPrice}`;
+
+        // Build filters display
+        let filtersHtml = '';
+        if (Object.keys(filters).length > 0) {
+          filtersHtml = `<div class="filters">`;
+          if (filters.price) filtersHtml += `<span class="filter-badge">Max Price: $${filters.price}</span>`;
+          if (filters.color) filtersHtml += `<span class="filter-badge">Color: ${filters.color}</span>`;
+          if (filters.urgent) filtersHtml += `<span class="filter-badge">Urgent</span>`;
+          filtersHtml += `</div>`;
+        }
+
+        resultsContent.innerHTML = `
+          <div class="result-item">
+            <div class="search-term">${data.search_term}</div>
+            ${filtersHtml}
+            <a href="${amazonLink}" class="amazon-link" target="_blank">Search on Amazon</a>
+          </div>
+        `;
+        resultsEl.classList.remove('hidden');
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        loadingEl.classList.add('hidden');
+      }
+    }
+
+    function showError(msg) {
+      resultsContent.innerHTML = `
+        <div class="error-message">
+          ${msg}
+        </div>
+      `;
+      resultsEl.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
